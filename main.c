@@ -3,8 +3,8 @@
 
 #define DELAY 30000
 
-#define STAR "."
-#define SHIP ">"
+#define STAR "*"
+#define SHIP "@"
 	
 int WIDTH, HEIGHT;
 
@@ -26,7 +26,8 @@ void drawMap (int posX, int posY)
 	for (int x = 0; x < WIDTH; x++) {
 		for (int y = 0; y < HEIGHT; y++) {
 			seed = (y + posY) << 16 | (x + posX);
-			mvprintw(y, x, rnd() % 256 > 1 ? " " : STAR);
+			bool isStar = rnd() % 256 > 1;
+			mvprintw(y, x, isStar ? " " : STAR);
 		}
 	}
 }
@@ -41,13 +42,14 @@ void drawDebug (int posX, int posY)
 int main (int argc, char *argv[])
 {
 	initscr();
+	raw();
+	keypad(stdscr, TRUE);
 	noecho();
 	curs_set(FALSE);
 
 	int16_t playerX = 1320;
 	int16_t playerY = 1320;
 
-	char in = '0';
 
 	while (1) {
 		//DRAW LOOP
@@ -62,17 +64,17 @@ int main (int argc, char *argv[])
 		refresh();
 
 		//INPUT LOOP
-		in = getchar();
-		if (in == 'f' || in == 'C') {
+		int in = getch();
+		if (in == KEY_RIGHT) {
 			playerX += 1;
 		}
-		if (in == 's' || in == 'D') {
+		if (in == KEY_LEFT) {
 			playerX -= 1;
 		}
-		if (in == 'd' || in == 'B') {
+		if (in == KEY_DOWN) {
 			playerY += 1;
 		}
-		if (in == 'e' || in == 'A') {
+		if (in == KEY_UP) {
 			playerY -= 1;
 		}
 		if (in == 'q') {
