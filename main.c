@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <unistd.h>
+#include <string.h>
 
 #define DELAY 30000
 
@@ -39,6 +40,17 @@ void drawDebug (int posX, int posY)
 	mvprintw(0, 0, debug);(0, 0, debug);
 }
 
+void setTxt (char *text, size_t size)
+{
+	char input[100];
+	echo();
+	mvprintw(HEIGHT - 1, 0, "Enter Message: ");
+	getstr(input);
+	strncpy(text, input, size - 1);
+	text[size - 1] = 0;
+	noecho();
+}
+
 int main (int argc, char *argv[])
 {
 	initscr();
@@ -50,6 +62,7 @@ int main (int argc, char *argv[])
 	int16_t playerX = 1320;
 	int16_t playerY = 1320;
 
+	char msg[100];
 
 	while (1) {
 		//DRAW LOOP
@@ -61,10 +74,15 @@ int main (int argc, char *argv[])
 		drawDebug(playerX, playerY);
 		
 		mvprintw(HEIGHT / 2, WIDTH / 2, SHIP);
+
+		mvprintw(HEIGHT / 2 - 1, (WIDTH - strlen(msg) + 1)/ 2, msg);
 		refresh();
 
 		//INPUT LOOP
 		int in = getch();
+		if (in == 't') {
+			setTxt(msg, sizeof msg / sizeof *msg);
+		}
 		if (in == KEY_RIGHT) {
 			playerX += 1;
 		}
