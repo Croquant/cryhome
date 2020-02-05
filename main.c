@@ -2,10 +2,11 @@
 #include <unistd.h>
 #include <string.h>
 
-#define DELAY 30000
+#define DELAY 10000
 
 #define STAR "*"
-#define SHIP "@"
+#define SHIP_RIGHT ">"
+#define SHIP_LEFT "<"
 	
 int WIDTH, HEIGHT;
 
@@ -13,7 +14,7 @@ uint32_t seed = 0;
 
 uint32_t rnd()
 {
-	seed += 0xe120fc15;
+	//seed += 0xe120fc15;
 	uint64_t tmp;
 	tmp = (uint64_t)seed * 0x4a39b70d;
 	uint32_t m1 = (tmp >> 32) ^ tmp;
@@ -26,17 +27,17 @@ void drawMap (int posX, int posY)
 {
 	for (int x = 0; x < WIDTH; x++) {
 		for (int y = 0; y < HEIGHT; y++) {
-			seed = (y + posY) << 16 | (x + posX);
+			seed = (x + posX) << 16 | (y + posY);
 			bool isStar = rnd() % 256 > 1;
 			mvprintw(y, x, isStar ? " " : STAR);
 		}
 	}
 }
 
-void drawDebug (int posX, int posY)
+void drawDebug (int posX, int posY, int time)
 {
 	char debug[50];
-	snprintf(debug, 50, "X: %u, Y: %u", posX, posY);
+	snprintf(debug, 50, "X: %u, Y: %u, Time: %u", posX, posY, time);
 	mvprintw(0, 0, debug);(0, 0, debug);
 }
 
@@ -51,16 +52,28 @@ void setTxt (char *text, size_t size)
 	noecho();
 }
 
+void drawShip (bool dir)
+{
+	if (dir) {
+		mvprintw(HEIGHT / 2, WIDTH / 2, SHIP_LEFT);
+	} else {
+		mvprintw(HEIGHT / 2, WIDTH / 2, SHIP_RIGHT);
+	}
+}
+
 int main (int argc, char *argv[])
 {
 	initscr();
 	raw();
 	keypad(stdscr, TRUE);
 	noecho();
+	halfdelay(10);
 	curs_set(FALSE);
 
-	int16_t playerX = 1320;
-	int16_t playerY = 1320;
+	uint16_t playerX = 0;
+	uint16_t playerY = 0;
+	uint16_t time = 0;
+	bool direction = 0;
 
 	char msg[100];
 
@@ -71,9 +84,9 @@ int main (int argc, char *argv[])
 
 		drawMap(playerX, playerY);
 
-		drawDebug(playerX, playerY);
+		drawDebug(playerX, playerY, time);
 		
-		mvprintw(HEIGHT / 2, WIDTH / 2, SHIP);
+		drawShip(direction);
 
 		mvprintw(HEIGHT / 2 - 1, (WIDTH - strlen(msg) + 1)/ 2, msg);
 		refresh();
@@ -85,9 +98,11 @@ int main (int argc, char *argv[])
 		}
 		if (in == KEY_RIGHT) {
 			playerX += 1;
+			direction = 0;
 		}
 		if (in == KEY_LEFT) {
 			playerX -= 1;
+			direction = 1;
 		}
 		if (in == KEY_DOWN) {
 			playerY += 1;
@@ -98,9 +113,9 @@ int main (int argc, char *argv[])
 		if (in == 'q') {
 			break;
 		}
+		time++;
 		usleep(DELAY);
 	}
-
 	endwin();
 }
 
