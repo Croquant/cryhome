@@ -70,8 +70,8 @@ int main (int argc, char *argv[])
 	halfdelay(10);
 	curs_set(FALSE);
 
-	uint16_t playerX = 0;
-	uint16_t playerY = 0;
+	uint32_t playerX = 0;
+	uint32_t playerY = 0;
 	uint16_t time = 0;
 	bool direction = 0;
 
