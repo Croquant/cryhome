@@ -10,6 +10,7 @@ typedef struct Player
 	uint32_t position;
 } Player;
 
+//change player pos
 void setpos (Player *p, uint16_t x, uint16_t y)
 {
 	p->x = x;
