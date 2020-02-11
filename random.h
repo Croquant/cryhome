@@ -16,4 +16,9 @@ uint32_t rnd()
 	return m2;
 }
 
+char randchar()
+{
+	return rnd() % 26 + 97;
+}
+
 #endif // RANDOM
