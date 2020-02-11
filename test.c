@@ -87,7 +87,7 @@ int main(int argc, char const *argv[])
 		time++;
 		usleep(DELAY);
 	}
-	move(WIDTH, HEIGHT);
-
+	
+	endwin();
 	return 0;
 }
